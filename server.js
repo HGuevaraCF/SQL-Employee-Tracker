@@ -30,7 +30,7 @@ function inquirerQuestions() {
             type: 'list',
             message: 'What would you like to do?',
             name: 'options',
-            choices: ['View all employees', 'View all roles', 'View all departments', 'Add employee', 'Add role', , 'Add department', 'Update Employee role', 'Quit'],
+            choices: ['View all employees', 'View all roles', 'View all departments', 'Add employee', 'Add role', 'Add department', 'Update Employee role', 'Quit'],
         } 
     ])
     .then((response) => {
@@ -39,10 +39,10 @@ function inquirerQuestions() {
                 db.query(
                     `SELECT
                         employees.id AS id,
-                        concat( employees.first_name, ' ', employees.last_name ) AS employee_name,
-                        roles.title AS role,
-                        departments.name AS department,
-                        concat( manager.first_name, ' ', manager.last_name ) AS manager_name
+                        concat( employees.first_name, ' ', employees.last_name ) AS Name,
+                        roles.title AS Role,
+                        departments.name AS Department,
+                        concat( manager.first_name, ' ', manager.last_name ) AS Manager
                     FROM
                         (((
                             employees
@@ -58,21 +58,27 @@ function inquirerQuestions() {
                     function (err, results) {
                     console.log('\n');
                     console.table(results);
+                    inquirerQuestions();
+
                 });
                 break;
             case 'View all roles':
-                db.query('SELECT * FROM employees_db.roles', function (err, results) {
+                db.query(
+                    `SELECT roles.id AS id, roles.title AS Title, departments.name AS Department, roles.salary as Salary
+                    FROM roles
+                    INNER JOIN departments
+                    ON roles.department_id = departments.id`, function (err, results) {
                     console.log('\n');
                     console.table(results);
+                    inquirerQuestions();
                 });
-                inquirerQuestions();
                 break;
             case 'View all departments':
                 db.query('SELECT * FROM employees_db.departments', function (err, results) {
                     console.log('\n');
                     console.table(results);
+                    inquirerQuestions();
                 });
-                inquirerQuestions();
                 break;
             case 'Add employee':
                 db.query('SELECT concat(employees.first_name, " ", employees.last_name) AS name FROM employees_db.employees', function (err, results) {
@@ -80,6 +86,7 @@ function inquirerQuestions() {
                     results.forEach(result => {
                         namesArray.push(result.name);
                     });
+                    namesArray.push('none');
                     db.query('SELECT title FROM employees_db.roles', function (err, results) {
                         rolesArray = []
                         results.forEach(result => {
@@ -117,9 +124,8 @@ function inquirerQuestions() {
                 });
                 break;
             case 'Quit':
-                console.log('quit');
+                console.log('Goodbye!');
                 break;
-
         }
     })
     .catch((error) => {
@@ -156,24 +162,31 @@ function AddEmployee(roles, managers){
     .then((response) => {
         db.query(`SELECT id FROM employees_db.roles WHERE title = "${response.role}"`, function (err, results) {
             role_id = results[0].id
-            db.query(`SELECT id FROM employees_db.employees WHERE first_name = "${response.manager.split(" ")[0]}" AND last_name = "${response.manager.split(" ")[1]}"`, function (err, results) {
-                manager_id = results[0].id
-                db.query(
-                    `INSERT INTO employees (first_name, last_name, role_id, manager_id)
-                    VALUES ("${response.first_name}", "${response.last_name}", ${role_id}, ${manager_id})`,
-                    function (err, results) {
-                        if(err){
-                            console.log(err)
-                        }else{
-                            console.log("Employee added succesfully!");
-                        }
+            if(response.manager == 'none'){
+                manager_id = null;
+            }else{
+                db.query(`SELECT id FROM employees_db.employees WHERE first_name = "${response.manager.split(" ")[0]}" AND last_name = "${response.manager.split(" ")[1]}"`, function (err, results) {
+                    manager_id = results[0].id
                 });
+            }
+            db.query(
+                `INSERT INTO employees (first_name, last_name, role_id, manager_id)
+                VALUES ("${response.first_name}", "${response.last_name}", ${role_id}, ${manager_id})`,
+                function (err, results) {
+                    if(err){
+                        console.log("Unexpected error. Try again.");
+                        inquirerQuestions();
+                    }else{
+                        console.log("Employee added succesfully!");
+                        inquirerQuestions();
+                    }
             });
         });
     })
     .catch((error) => {
         console.log(error);
     })
+    
 };
 
 function UpdateEmployeeRole(roles, names){
@@ -202,9 +215,11 @@ function UpdateEmployeeRole(roles, names){
                     WHERE id = ${employee_id}`,
                     function (err, results) {
                         if(err){
-                            console.log(err)
+                            console.log("Unexpected error. Try again.");
+                            inquirerQuestions();
                         }else{
-                            console.log("Employee updated succesfully!");
+                            console.log("Employee´s role updated succesfully!");
+                            inquirerQuestions();
                         }
                 });
             });
@@ -216,8 +231,6 @@ function UpdateEmployeeRole(roles, names){
 };
 
 function AddRole(results) {
-    console.log("previo a inquirer");
-    console.log(results);
     inquirer.prompt([
         {
             type: 'input',
@@ -244,9 +257,11 @@ function AddRole(results) {
                 VALUES ("${response.title}", ${response.salary}, ${department_id})`,
                 function (err, results) {
                     if(err){
-                        console.log(err)
+                        console.log("Unexpected error. Try again.");
+                        inquirerQuestions();
                     }else{
                         console.log("Role added succesfully!");
+                        inquirerQuestions();
                     }
             });
         });
@@ -267,11 +282,13 @@ function AddDepartment(){
         db.query(
             `INSERT INTO employees_db.departments (name)
             VALUES ("${response.department_name}")`, 
-            await function(err, results) {
+            function(err, results) {
                 if(err){
-                    console.log(err);
+                    console.log("Unexpected error. Try again.");
+                    inquirerQuestions();
                 }else{
-                    console.log(`Department added succesfully!`)
+                    console.log(`Department added succesfully!`);
+                    inquirerQuestions();
                 }
         });
     })
