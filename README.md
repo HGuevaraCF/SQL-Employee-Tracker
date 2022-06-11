@@ -7,13 +7,12 @@ This project is intended to provide the user with a simple way to display and ed
 
 
 ### Install
-```md
 After running both sql files, run the following command in order to install the required libraries:
     npm install
-```
+
 
 ### Walktrough video
-    https://youtu.be/xoq2N7Svrzs
+    https://www.youtube.com/watch?v=O84dK7rSJcs
 
 ### Questions
 ```md
