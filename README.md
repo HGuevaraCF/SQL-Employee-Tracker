@@ -10,13 +10,13 @@ This project is intended to provide the user with a simple way to display and ed
 
 After running both sql files, run the following command in order to install the required libraries:
 ```md
-    npm install
+npm install
 ```
 
 
 ### Walktrough video
 ```md
-    https://www.youtube.com/watch?v=O84dK7rSJcs
+https://www.youtube.com/watch?v=O84dK7rSJcs
 ```
 
 ### Questions
