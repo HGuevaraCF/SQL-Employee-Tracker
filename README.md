@@ -1,14 +1,15 @@
 ## SQL Employee Tracker
 
 ### Description
-```md
+
 This project is intended to provide the user with a simple way to display and edit data from a database
-```
+
 
 
 ### Install
-```md
+
 After running both sql files, run the following command in order to install the required libraries:
+```md
     npm install
 ```
 
@@ -19,9 +20,9 @@ After running both sql files, run the following command in order to install the 
 ```
 
 ### Questions
-```md
-For further questions, you can find me at:
 
+For further questions, you can find me at:
+```md
 github account: HGuevaraCF.
 email: ht.guevara@hotmail.com.
 ```
