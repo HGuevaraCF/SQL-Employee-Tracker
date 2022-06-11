@@ -14,7 +14,9 @@ After running both sql files, run the following command in order to install the 
 
 
 ### Walktrough video
-https://www.youtube.com/watch?v=O84dK7rSJcs
+```md
+    https://www.youtube.com/watch?v=O84dK7rSJcs
+```
 
 ### Questions
 ```md
